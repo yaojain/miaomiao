@@ -11,7 +11,7 @@ export default{
             component:()=>import('@/components/ComingSoon')
         },
         {
-            path:'nowPiaying',
+            path:'nowPlaying',
             component:()=>import('@/components/NowPlaying')
         },
         {
