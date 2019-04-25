@@ -1,18 +1,30 @@
 export default{
     path:'/movie',
     component:() => import('@/views/Movie'),
+    meta:{
+        keepAlive:true
+    },
     children:[
         {
             path:'city',
-            component:()=>import('@/components/City')
+            component:()=>import('@/components/City'),
+            meta:{
+                keepAlive:true
+            }
         },
         {
             path:'comingSoon',
-            component:()=>import('@/components/ComingSoon')
+            component:()=>import('@/components/ComingSoon'),
+            meta:{
+                keepAlive:true
+            }
         },
         {
             path:'nowPlaying',
-            component:()=>import('@/components/NowPlaying')
+            component:()=>import('@/components/NowPlaying'),
+            meta:{
+                keepAlive:true
+            }
         },
         {
             path:'search',
