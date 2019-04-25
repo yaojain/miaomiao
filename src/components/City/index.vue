@@ -17,7 +17,7 @@
             <li>安阳</li>
           </ul>
         </div>
-         <div>
+        <div>
           <h2>A</h2>
           <ul>
             <li>阿拉善盟</li>
@@ -26,7 +26,7 @@
             <li>安阳</li>
           </ul>
         </div>
-         <div>
+        <div>
           <h2>A</h2>
           <ul>
             <li>阿拉善盟</li>
@@ -35,7 +35,7 @@
             <li>安阳</li>
           </ul>
         </div>
-         <div>
+        <div>
           <h2>A</h2>
           <ul>
             <li>阿拉善盟</li>
@@ -44,7 +44,7 @@
             <li>安阳</li>
           </ul>
         </div>
-         <div>
+        <div>
           <h2>A</h2>
           <ul>
             <li>阿拉善盟</li>
@@ -53,7 +53,7 @@
             <li>安阳</li>
           </ul>
         </div>
-         <div>
+        <div>
           <h2>A</h2>
           <ul>
             <li>阿拉善盟</li>
@@ -62,7 +62,7 @@
             <li>安阳</li>
           </ul>
         </div>
-         <div>
+        <div>
           <h2>A</h2>
           <ul>
             <li>阿拉善盟</li>
@@ -87,12 +87,49 @@
 
 <script>
 export default {
-  name: "City"
+  name: "City",
+  mounted() {
+    this.$axios.get("/api/cityList").then(res => {
+      var msg = res.data.mag;
+      var cities = res.data.data.cities;
+      this.formatCityList(cities);
+    });
+  },
+  methods: {
+    formatCityList(cities) {
+      var cityList = [],
+        hotList = [];
+      for (let i = 0; i < cities.length; i++) {
+        console.log(cities[i]);
+        var firstLetter = cities[i].py.substring(0, 1).toUpperCase();
+        if (toCom(firstLetter)) {  //新添加
+          cityList.push({
+            index: firstLetter,
+            list: [{ nm: cities[i].name, id: cities[i].id }]
+          });
+        }else{ 
+           for (let j = 0; j < cityList.length; j++) {
+              cityList[i].list.push({ nm: cities[i].name, id: cities[i].id })
+            } 
+          
+        }
+      }
+      function toCom(firstLetter) {
+            for (let j = 0; j < cityList.length; j++) {
+              if(cityList[i].index === firstLetter){
+                return false;
+              }else{
+                return true;
+              }
+            }
+      }
+    }
+  }
 };
 </script>
 
 <style scope>
- #content .city_body {
+#content .city_body {
   margin-top: 45px;
   display: flex;
   width: 100%;
