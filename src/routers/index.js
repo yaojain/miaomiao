@@ -12,6 +12,6 @@ export default new Router({
     moverRouter,
     cinemaRouter,
     mineRouter,
-    { path: "/*", redirect: "/movie" }
+    { path: "/*", redirect: "/movie/nowPlaying" }
   ]
 })

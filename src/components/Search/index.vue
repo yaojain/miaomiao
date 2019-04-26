@@ -9,18 +9,18 @@
     <div class="search_result">
       <h3>电影/电视剧/综艺</h3>
       <ul>
-        <li>
+        <li v-for="item in movieList" :key="item.id">
           <div class="img">
-            <img src="/images/movie_1.jpg">
+            <img :src=" item.img | setWh('128.180') ">
           </div>
           <div class="info">
             <p>
-              <span>无名之辈</span>
-              <span>8.5</span>
+              <span>{{ item.nm }}</span>
+              <span>{{ item.sc }}</span>
             </p>
-            <p>A Cool Fish</p>
-            <p>剧情,喜剧,犯罪</p>
-            <p>2018-11-16</p>
+            <p>{{ item.enm }}</p>
+            <p>{{ item.cat }}</p>
+            <p>{{ item.rt }}</p>
           </div>
         </li>
       </ul>
@@ -30,7 +30,70 @@
 
 <script>
 export default {
-  name: "Search"
+  name: "Search",
+  data() {
+    return {
+      message: "",
+      movieList: []
+    };
+  },
+  mounted() {},
+  methods: {
+    cancelQuest() {
+      if (typeof this.source === "function") {   //防抖
+        this.source("终止请求"); //取消请求
+      }
+    }
+  },
+  watch: {
+    // message(newVal) {
+    //   this.$axios.get("/api/searchList?cityId=10&kw=" + newVal).then(res => {
+    //     var msg = res.data.msg;
+    //     if (res.data.data.movies) {
+    //       var movies = res.data.data.movies.list;
+    //     } else {
+    //       this.movieList = [];
+    //     }
+    //     console.log(movies);
+    //     if (movies && msg) {
+    //       this.movieList = movies;
+    //     }
+    //   });
+    // }
+    message: {
+      handler(newVal) {
+        var _this = this;
+        this.cancelQuest();
+        this.$axios
+          .get("/api/searchList?cityId=10&kw=" + newVal, {
+            cancelToken:new this.$axios.CancelToken(function executor(c) {   //axios  本身的防抖策略
+              _this.source = c;
+            })
+          })
+          .then(res => {
+            var msg = res.data.msg;
+            if (res.data.data.movies) {
+              var movies = res.data.data.movies.list;
+            } else {
+              this.movieList = [];
+            }
+            console.log(movies);
+            if (movies && msg) {
+              this.movieList = movies;
+            }
+          })
+          .catch(err => {
+            if (this.axios.isCancel(err)) {
+              console.log("Rquest canceled", err.message); //请求如果被取消，这里是返回取消的message
+            } else {
+              //handle error
+              console.log(err);
+            }
+          });
+      },
+      immediate: true
+    }
+  }
 };
 </script>
 
