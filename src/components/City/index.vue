@@ -1,24 +1,33 @@
 <template>
   <div class="city_body">
     <div class="city_list">
-      <div class="city_hot">
-        <h2>热门城市</h2>
-        <ul class="clearfix">
-          <li v-for="item in hotList" :key="item.id">{{item.nm}}</li>
-        </ul>
-      </div>
-      <div class="city_sort" ref="city_sort">
-        <div v-for="(item, index) in cityList" :key="index">
-          <h2>{{item.index}}</h2>
-          <ul >
-            <li v-for="(city,index) in item.list" :key="city.id">{{city.nm}}</li>
-          </ul>
+      <Scroller ref="city_list"> 
+        <!-- Scroller 包裹的元素必须为一个整体 -->
+        <div>
+          <div class="city_hot">
+            <h2>热门城市</h2>
+            <ul class="clearfix">
+              <li v-for="item in hotList" :key="item.id">{{item.nm}}</li>
+            </ul>
+          </div>
+          <div class="city_sort" ref="city_sort">
+            <div v-for="(item, index) in cityList" :key="index">
+              <h2>{{item.index}}</h2>
+              <ul>
+                <li v-for="(city,index) in item.list" :key="city.id">{{city.nm}}</li>
+              </ul>
+            </div>
+          </div>
         </div>
-      </div>
+      </Scroller>
     </div>
     <div class="city_index">
       <ul>
-        <li @touchstart="handleToIndex(index)" v-for="(cityP,index) in cityList" :key="cityP.index">{{cityP.index}}</li>
+        <li
+          @touchstart="handleToIndex(index)"
+          v-for="(cityP,index) in cityList"
+          :key="cityP.index"
+        >{{cityP.index}}</li>
       </ul>
     </div>
   </div>
@@ -87,10 +96,11 @@ export default {
         hotList: hotList
       };
     },
-    handleToIndex(index){
-        var h2 = this.$refs.city_sort.getElementsByTagName("h2");
-        console.log(h2)
-         this.$refs.city_sort.parentNode.scrollTop = h2[index].offsetTop
+    handleToIndex(index) {
+      var h2 = this.$refs.city_sort.getElementsByTagName("h2");
+      console.log(h2);
+     // this.$refs.city_sort.parentNode.scrollTop = h2[index].offsetTop; //原生js跳转  因better-scroll管理元素原因 该方法失效  徐引入better-scroll跳转方法
+     this.$refs.city_list.ToScrollTop(h2[index].offsetTop);
     }
   }
 };
