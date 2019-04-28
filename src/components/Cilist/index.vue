@@ -13,7 +13,7 @@
           <span>{{item.distance}}</span>
         </div>
         <div class="card">
-          <div v-for="(num,key) in item.tag" :key="key" v-if="num === 1">{{key | formatCard(key)}}</div>
+          <div v-for="(num,key) in item.tag" :key="key" v-if="num === 1" :class="key | classCard">{{key | formatCard(key)}}</div>
         </div>
       </li>
     </ul>
@@ -48,7 +48,20 @@ export default {
           if(card[i].key === key){
               return card[i].value
           }
-          
+        }
+        return ''
+    },
+    classCard(key) {
+        var card = [
+          { key: "allowRefund", value: "or" },
+          { key: "endorse", value: "or" },
+          { key: "sell", value: "bl" },
+          { key: "snack", value: "bi" }
+        ];
+       for (let i = 0; i < card.length; i++) {
+          if(card[i].key === key){
+              return card[i].value
+          }
         }
         return ''
     }
