@@ -1,23 +1,32 @@
 <template>
   <div class="cinema_body">
-    <Scroller>  
-    <ul>
-      <li v-for="item in cinemaList" :key="item.id">
-        <div>
-          <span>{{item.nm}}</span>
-          <span class="q">
-            <span class="price">{{item.sellPrice}}</span> 元起
-          </span>
-        </div>
-        <div class="address">
-          <span>{{item.addr}}</span>
-          <span>{{item.distance}}</span>
-        </div>
-        <div class="card">
-          <div v-for="(num,key) in item.tag" :key="key" v-if="num === 1" :class="key | classCard">{{key | formatCard(key)}}</div>
-        </div>
-      </li>
-    </ul>
+    <loading  v-if="isLoading"/>
+    <Scroller v-else :handleToScroll="handleToScroll" :handleTouchEnd="handleTouchEnd">
+     <div>
+     <div class="pullDown">{{pullDownMsg}}</div>
+      <ul>
+        <li v-for="item in cinemaList" :key="item.id">
+          <div>
+            <span>{{item.nm}}</span>
+            <span class="q">
+              <span class="price">{{item.sellPrice}}</span> 元起
+            </span>
+          </div>
+          <div class="address">
+            <span>{{item.addr}}</span>
+            <span>{{item.distance}}</span>
+          </div>
+          <div class="card">
+            <div
+              v-for="(num,key) in item.tag"
+              :key="key"
+              v-if="num === 1"
+              :class="key | classCard"
+            >{{key | formatCard(key)}}</div>
+          </div>
+        </li>
+      </ul>
+       </div>
     </Scroller>
   </div>
 </template>
@@ -27,57 +36,92 @@ export default {
   name: "Cilist",
   data() {
     return {
-      cinemaList: []
+      cinemaList: [],
+      pullDownMsg: "",
+      isLoading: true,
+      prevCityId:-1
     };
   },
-  mounted() {
-    this.$axios.get("/api/cinemaList?cityId=10").then(res => {
+  activated() {
+    var cityId = this.$store.state.City.id;
+    if(this.prevCityId === cityId){
+      return;
+    }
+    this.isLoading = true;
+    this.$axios.get("/api/cinemaList?cityId="+cityId).then(res => {
       var msg = res.data.msg;
       if (msg === "ok") {
         this.cinemaList = res.data.data.cinemas;
+        this.isLoading = false;
+        this.prevCityId = cityId;
       }
     });
   },
   filters: {
     formatCard(key) {
-        var card = [
-          { key: "allowRefund", value: "改签" },
-          { key: "endorse", value: "退票" },
-          { key: "sell", value: "折扣卡" },
-          { key: "snack", value: "小吃" }
-        ];
-       for (let i = 0; i < card.length; i++) {
-          if(card[i].key === key){
-              return card[i].value
-          }
+      var card = [
+        { key: "allowRefund", value: "改签" },
+        { key: "endorse", value: "退票" },
+        { key: "sell", value: "折扣卡" },
+        { key: "snack", value: "小吃" }
+      ];
+      for (let i = 0; i < card.length; i++) {
+        if (card[i].key === key) {
+          return card[i].value;
         }
-        return ''
+      }
+      return "";
     },
     classCard(key) {
-        var card = [
-          { key: "allowRefund", value: "or" },
-          { key: "endorse", value: "or" },
-          { key: "sell", value: "bl" },
-          { key: "snack", value: "bi" }
-        ];
-       for (let i = 0; i < card.length; i++) {
-          if(card[i].key === key){
-              return card[i].value
-          }
+      var card = [
+        { key: "allowRefund", value: "or" },
+        { key: "endorse", value: "or" },
+        { key: "sell", value: "bl" },
+        { key: "snack", value: "bi" }
+      ];
+      for (let i = 0; i < card.length; i++) {
+        if (card[i].key === key) {
+          return card[i].value;
         }
-        return ''
+      }
+      return "";
+    }
+  },
+  methods: {
+    handleDetail() {
+      //点击详情
+      console.log("handleDetail");
+    },
+    handleToScroll(pos) {
+      if (pos.y > 30) {
+        this.pullDownMsg = "正在更新中...";
+      }
+    },
+    handleTouchEnd(pos) {
+      if (pos.y > 30) {
+        this.$axios.get("/api/movieOnInfoList?cityId=110").then(res => {
+          var msg = res.data.msg;
+          if (msg === "ok") {
+            this.pullDownMsg = "更新完成...";
+            setTimeout(() => {
+              this.movieList = res.data.data.movieList;
+              this.pullDownMsg = "";
+            }, 500);
+          }
+        });
+      }
     }
   }
 };
 </script>
 
-<style scoped>
+<style scoped >
 #content .cinema_body {
   flex: 1;
   overflow: auto;
 }
 .cinema_body ul {
-  padding: 20px;
+  padding: 0 20px;
 }
 .cinema_body li {
   border-bottom: 1px solid #e6e6e6;
@@ -120,5 +164,11 @@ export default {
 .cinema_body .card div.bl {
   color: #589daf;
   border: 1px solid #589daf;
+}
+.cinema_body .pullDown {
+  margin: 0;
+  padding: 0;
+  border: none;
+  text-align: center;
 }
 </style>
