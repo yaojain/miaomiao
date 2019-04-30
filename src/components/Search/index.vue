@@ -63,9 +63,10 @@ export default {
     message: {
       handler(newVal) {
         var _this = this;
+        var cityId = this.$store.state.City.id;
         this.cancelQuest();
         this.$axios
-          .get("/api/searchList?cityId=10&kw=" + newVal, {
+          .get("/api/searchList?cityId="+cityId+"&kw=" + newVal, {
             cancelToken:new this.$axios.CancelToken(function executor(c) {   //axios  本身的防抖策略
               _this.source = c;
             })
@@ -77,7 +78,6 @@ export default {
             } else {
               this.movieList = [];
             }
-            console.log(movies);
             if (movies && msg) {
               this.movieList = movies;
             }

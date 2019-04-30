@@ -1,5 +1,9 @@
 <template>
   <div class="movie_body" ref="movie_body">
+    <loading v-if="isLoading"/>
+     <Scroller v-else :handleToScroll='handleToScroll' :handleTouchEnd='handleTouchEnd' >
+    <div>
+     <div class="pullDown">{{pullDownMsg}}</div>
     <ul>
       <li v-for="item in comingList" :key="item.id">
         <div class="pic_show" >
@@ -19,6 +23,8 @@
         <div class="btn_pre">预售</div>
       </li>
     </ul>
+    </div>
+        </Scroller>
   </div>
 </template>
 
@@ -27,18 +33,53 @@ export default {
   name: "ComingSoon",
   data() {
     return {
-      comingList: []
+       comingList: [],
+      pullDownMsg: "",
+      isLoading:true,
+      prevCityId:-1
     };
   },
-  mounted() {
-    this.$axios.get("/api/movieComingLIst?cityId=10").then(res => {
+  activated() {
+    var cityId = this.$store.state.City.id;
+    if(cityId === this.prevCityId){
+      return false;
+    }
+    this.isLoading=true;
+    this.$axios.get("/api/movieComingLIst?cityId=" + cityId).then(res => {
+      this.isLoading=false;
       var msg = res.data.msg;
       if (msg === "ok") {
         this.comingList = res.data.data.comingList;
+        this.isLoading=false;
+        this.prevCityId = cityId;
       }
     });
   },
-  methods: {}
+  methods: {
+       handleDetail() {
+      //点击详情
+      console.log("handleDetail");
+    },
+    handleToScroll(pos) {
+      if (pos.y > 30) {
+        this.pullDownMsg = "正在更新中...";
+      }
+    },
+    handleTouchEnd(pos) {
+      if (pos.y > 30) {
+        this.$axios.get("/api/movieOnInfoList?cityId=110").then(res => {
+          var msg = res.data.msg;
+          if (msg === "ok") {
+            this.pullDownMsg = "更新完成...";
+            setTimeout(() => {
+              this.movieList = res.data.data.movieList;
+              this.pullDownMsg = "";
+            }, 500);
+          }
+        });
+      }
+    }
+  }
 };
 </script>
 
@@ -112,5 +153,11 @@ export default {
 }
 .movie_body .btn_pre {
   background-color: #3c9fe6;
+}
+.movie_body .pullDown {
+  margin: 0;
+  padding: 0;
+  border: none;
+  text-align: center;
 }
 </style>
