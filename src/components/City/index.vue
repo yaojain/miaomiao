@@ -115,7 +115,6 @@ export default {
     },
     handleToIndex(index) {
       var h2 = this.$refs.city_sort.getElementsByTagName("h2");
-      console.log(h2);
       // this.$refs.city_sort.parentNode.scrollTop = h2[index].offsetTop; //原生js跳转  因better-scroll管理元素原因 该方法失效  徐引入better-scroll跳转方法
       this.$refs.city_list.ToScrollTop(h2[index].offsetTop);
     },

@@ -42,7 +42,6 @@ export default {
         if (msg === "ok") {
           var nm = res.data.data.nm;
           var id = res.data.data.id;
-          console.log(this)
           if (this.$store.state.City.id == id) {  //以下判断也可以
             return false;
           } 

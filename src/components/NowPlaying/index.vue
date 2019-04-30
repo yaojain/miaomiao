@@ -41,7 +41,6 @@ export default {
     };
   },
   activated() {
-    console.log(this)
     var cityId = this.$store.state.City.id;
     if (cityId === this.prevCityId) {
       return false;
