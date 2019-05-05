@@ -1,61 +1,116 @@
 <template>
-        <div id="detailContrainer" class="slide-enter-active">
-        <Header title="影片详情" >
-            <i class="iconfont icon-right" @touchstart='handelToBack'></i>
-        </Header>
-       
-		<div  id="content" class="contentDetail">
-			<div class="detail_list">
-				<div class="detail_list_bg"></div>
-				<div class="detail_list_filter"></div>
-				<div class="detail_list_content">
-					<div class="detail_list_img">
-						<img src="/images/movie_1.jpg" alt="">
-					</div>
-					<div class="detail_list_info">
-						<h2>无名之辈</h2>
-						<p>A Cool Fish</p>
-						<p>9.2</p>
-						<p>剧情,喜剧,犯罪</p>
-						<p>中国大陆 / 108分钟</p>
-						<p>2018-11-16大陆上映</p>
-					</div>
-				</div>
-			</div>
-			<div class="detail_intro">
-				<p>在一座山间小城中，一对低配劫匪、一个落魄的泼皮保安、一个身体残疾却性格彪悍的残毒舌女以及一系列生活在社会不同轨迹上的小人物，在一个貌似平常的日子里，因为一把丢失的老枪和一桩当天发生在城中的乌龙劫案，从而被阴差阳错地拧到一起，发生的一幕幕令人啼笑皆非的荒诞喜剧。</p>
-			</div>
-			<div class="detail_player swiper-container">
-				<ul class="swiper-wrapper">
-					<li class="swiper-slide">
-						<div>
-							<img src="/images/person_1.webp" alt="">
-						</div>
-						<p>陈建斌</p>
-						<p>马先勇</p>
-					</li>
-				</ul>
-			</div>
-		</div>
-	</div>
+  <div id="detailContrainer" class="slide-enter-active">
+    <Header title="影片详情">
+      <i class="iconfont icon-right" @touchstart="handelToBack"></i>
+    </Header>
+    <loading v-if="isLoading"/>
+    <div v-else id="content" class="contentDetail">
+      <!-- <div class="detail_list">
+        <div class="detail_list_bg"></div>
+        <div class="detail_list_filter"></div>
+        <div class="detail_list_content">
+          <div class="detail_list_img">
+            <img src="/images/movie_1.jpg" alt>
+          </div>
+          <div class="detail_list_info">
+            <h2>无名之辈</h2>
+            <p>A Cool Fish</p>
+            <p>9.2</p>
+            <p>剧情,喜剧,犯罪</p>
+            <p>中国大陆 / 108分钟</p>
+            <p>2018-11-16大陆上映</p>
+          </div>
+        </div>
+      </div>
+      <div class="detail_intro">
+        <p>在一座山间小城中，一对低配劫匪、一个落魄的泼皮保安、一个身体残疾却性格彪悍的残毒舌女以及一系列生活在社会不同轨迹上的小人物，在一个貌似平常的日子里，因为一把丢失的老枪和一桩当天发生在城中的乌龙劫案，从而被阴差阳错地拧到一起，发生的一幕幕令人啼笑皆非的荒诞喜剧。</p>
+      </div>
+      <div class="detail_player swiper-container">
+        <ul class="swiper-wrapper">
+          <li class="swiper-slide">
+            <div>
+              <img src="/images/person_1.webp" alt>
+            </div>
+            <p>陈建斌</p>
+            <p>马先勇</p>
+          </li>
+        </ul>
+      </div>-->
+      <!-- 数据渲染 -->
+      <div class="detail_list">
+        <div class="detail_list_bg"></div>
+        <div class="detail_list_filter"></div>
+        <div class="detail_list_content">
+          <div class="detail_list_img">
+            <img :src="detailMovie.img | setWh('148.208')">
+          </div>
+          <div class="detail_list_info">
+            <h2>{{ detailMovie.nm }}</h2>
+            <p>{{ detailMovie.enm }}</p>
+            <p>{{ detailMovie.sc }}</p>
+            <p>{{ detailMovie.cat }}</p>
+            <p>{{ detailMovie.src }} / {{ detailMovie.dur }}分钟</p>
+            <p>{{ detailMovie.pubDesc }}</p>
+          </div>
+        </div>
+      </div>
+      <div class="detail_intro">
+        <p>{{detailMovie.dra}}</p>
+      </div>
+      <div class="detail_player swiper-container" ref="detail_player">
+        <ul class="swiper-wrapper">
+          <li class="swiper-slide" v-for="(item,index) in detailMovie.photos" :key="index">
+            <div>
+              <img :src="item | setWh('140.93')" alt>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
-import Header from '@/components/Header'
+import Header from "@/components/Header";
 export default {
-    name:'Detail',
-    components:{
-        Header
-    },
-    props:["movieId"],
-    methods:{
-        handelToBack(){
-            this.$router.back()
-        }
-    },
-    mounted(){
-        console.log(this.movieId)
+  name: "Detail",
+  components: {
+    Header
+  },
+  props: ["movieId"],
+  data() {
+    return {
+      detailMovie: [],
+      isLoading: true
+    };
+  },
+  methods: {
+    handelToBack() {
+      this.$router.back();
     }
+  },
+  mounted() {
+    console.log(this.movieId);
+    this.$axios.get("/api/detailmovie?movieId=" + this.movieId).then(res => {
+      var msg = res.data.msg;
+      if (msg === "ok") {
+        this.isLoading = false;
+        this.detailMovie = res.data.data.detailMovie;
+        this.$nextTick(() => {
+          new Swiper(this.$refs.detail_player, {
+            loop: true,
+            autoplay: {
+              disableOnInteraction: false,
+              delay: 500 //n秒切换一次
+            },
+            slidesPerView: "auto",
+            freeMode: true,
+            freeModeSticky: true
+          });
+        });
+      }
+    });
+  }
 };
 </script>
 
