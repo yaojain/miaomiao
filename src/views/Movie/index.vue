@@ -20,6 +20,7 @@
       </keep-alive>
     </div>
     <TabBar></TabBar>
+     <router-view name="detail"></router-view>
   </div>
 </template>
 
@@ -27,7 +28,6 @@
 import Header from "@/components/Header";
 import TabBar from "@/components/TabBar";
 import { messageBox } from "@/components/JS";
-import { setTimeout } from "timers";
 export default {
   name: "Movie",
   components: {

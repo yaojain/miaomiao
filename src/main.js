@@ -7,6 +7,8 @@ import BScroll from "better-scroll";
 Vue.config.productionTip = false; //设置为 false 以阻止 vue 在启动时生成生产提示
 Vue.prototype.$axios = axios;
 Vue.filter('setWh',(url,arg)=>{
+  console.log(url)
+  console.log(arg)
   return url.replace(/w\.h/,arg)
 })
 import Scroller from '@/components/Scroller'

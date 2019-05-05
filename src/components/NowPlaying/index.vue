@@ -6,11 +6,11 @@
         <div class="pullDown">{{pullDownMsg}}</div>
         <ul>
           <li v-for="(item,index) in movieList" :key="item.id">
-            <div class="pic_show" @tap="handleDetail">
+            <div class="pic_show" @tap="handleDetail(item.id)">
               <img :src="item.img | setWh('128.180')">
             </div>
             <div class="info_list">
-              <h2>
+              <h2 @tap="handleDetail(item.id)">
                 {{item.nm}}
                 <img v-if="item.version" src="@/assets/maxs.png">
               </h2>
@@ -57,9 +57,9 @@ export default {
     });
   },
   methods: {
-    handleDetail() {
+    handleDetail(movieId) {
       //点击详情
-      console.log("handleDetail");
+      this.$router.push('/movie/detail/1/'+movieId)
     },
     handleToScroll(pos) {
       if (pos.y > 30) {
